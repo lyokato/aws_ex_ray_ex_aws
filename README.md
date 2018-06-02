@@ -45,6 +45,8 @@ config :ex_aws,
   http_client: AwxExRay.ExAws.HTTPClient
 ```
 
+Then automatically record subsegment if HTTP request toward AWS-Services called on the tracing process.
+
 ## SEE ALSO
 
 - Core: https://github.com/lyokato/aws_ex_ray
