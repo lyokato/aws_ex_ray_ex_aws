@@ -2,6 +2,8 @@ defmodule AwsExRay.ExAws.HTTPClient do
 
   @behaviour ExAws.Request.HttpClient
 
+  @default_recv_timeout 30_000
+
   alias AwsExRay.ExAws.WhiteList
   alias AwsExRay.HTTPClientUtil
   alias AwsExRay.Record.Error
@@ -13,6 +15,8 @@ defmodule AwsExRay.ExAws.HTTPClient do
 
   @impl ExAws.Request.HttpClient
   def request(method, url, body \\ "", headers \\ [], opts \\ []) do
+
+    opts = merge_default_options_if_needed(opts)
 
     case parse_target(headers) do
 
@@ -89,6 +93,10 @@ defmodule AwsExRay.ExAws.HTTPClient do
 
     end
 
+  end
+
+  defp merge_default_options_if_needed(opts)do
+    Keyword.put_new(opts, :recv_timeout, @default_recv_timeout)
   end
 
   defp gather_aws_response_params(_whitelist, ""), do: %{}
