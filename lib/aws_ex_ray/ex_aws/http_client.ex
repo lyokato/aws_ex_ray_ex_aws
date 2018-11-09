@@ -34,7 +34,8 @@ defmodule AwsExRay.ExAws.HTTPClient do
 
             whitelist = WhiteList.find(service, operation)
 
-            aws_req_params = gather_aws_request_params(whitelist, body)
+            json_codec = ExAws.Config.new(:xray)[:json_codec]
+            aws_req_params = gather_aws_request_params(whitelist, body, json_codec)
 
             headers = HTTPClientUtil.put_tracing_header(headers, subsegment)
 
@@ -49,7 +50,7 @@ defmodule AwsExRay.ExAws.HTTPClient do
 
                 subsegment = Subsegment.set_http_response(subsegment, res)
 
-                aws_res_params = gather_aws_response_params(whitelist, body)
+                aws_res_params = gather_aws_response_params(whitelist, body, json_codec)
 
                 request_id = Util.get_header(headers, "x-amzn-RequestId")
 
@@ -99,9 +100,9 @@ defmodule AwsExRay.ExAws.HTTPClient do
     Keyword.put_new(opts, :recv_timeout, @default_recv_timeout)
   end
 
-  defp gather_aws_response_params(_whitelist, ""), do: %{}
-  defp gather_aws_response_params(whitelist, body) do
-    case Poison.decode(body) do
+  defp gather_aws_response_params(_whitelist, "", _json_codec), do: %{}
+  defp gather_aws_response_params(whitelist, body, json_codec) do
+    case json_codec.decode(body) do
       {:ok, json} ->
         WhiteList.gather(:response, json, whitelist)
 
@@ -109,9 +110,9 @@ defmodule AwsExRay.ExAws.HTTPClient do
     end
   end
 
-  defp gather_aws_request_params(_whitelist, ""), do: %{}
-  defp gather_aws_request_params(whitelist, body) do
-    case Poison.decode(body) do
+  defp gather_aws_request_params(_whitelist, "", _json_codec), do: %{}
+  defp gather_aws_request_params(whitelist, body, json_codec) do
+    case json_codec.decode(body) do
 
       {:ok, json} ->
         WhiteList.gather(:request, json, whitelist)
