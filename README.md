@@ -1,9 +1,5 @@
 # AwsExRay - ExAws Support
 
-## NOT STABLE YET
-
-Please wait version 1.0.0 released.
-
 ## Installation
 
 If [available in Hex](https://hex.pm/docs/publish), the package can be installed
@@ -26,7 +22,7 @@ def deps do
   [
     {:aws_ex_ray, "~> 0.1"},
     {:aws_ex_ray_httpoison, "~> 0.1"},
-    {:aws_ex_ray_ex_aws, "~> 0.1.1"}
+    {:aws_ex_ray_ex_aws, "~> 0.1.2"}
   ]
 end
 ```
